@@ -1,10 +1,10 @@
 # Databricks notebook source
 import pandas as pd
 
-
 # COMMAND ----------
 
-df = pd.read_csv("/Workspace/Repos/franco.patano@databricks.com/lakehouse_dba_tools/resources/azure_databricks_sql_pricing.csv")
+# Using the current working branch in Databricks Repos - Files in Repos https://docs.databricks.com/repos/index.html#files-in-repos
+df = pd.read_csv("../resources/azure_databricks_sql_pricing.csv")
 
 # COMMAND ----------
 
