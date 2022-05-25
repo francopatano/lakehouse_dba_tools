@@ -3,11 +3,24 @@
 
 # COMMAND ----------
 
-dbutils.widgets.text('database_name','tpcds_sf10_delta_nopartitions','Database Name')
+
+# {
+#   "parallel_conn": "5",
+#   "host_name": "adb-2290777133481849.9.azuredatabricks.net",
+#   "http_path": "/sql/1.0/endpoints/460f103e1bb95914",
+#   "database_name": "tpcds_sf100_delta_nopartitions",
+#   "re_peats": "40"
+# }
+
+# {"database_name":"tpcds_sf1000_delta_nopartitions","host_name":"e2-demo-west.cloud.databricks.com","http_path":"/sql/1.0/endpoints/b6019c8f57bcdda9","parallel_conn":"2","re_peats":"2"}
+
+# COMMAND ----------
+
+dbutils.widgets.text('database_name','tpcds_sf1000_delta_nopartitions','Database Name')
 dbutils.widgets.text('host_name','e2-demo-west.cloud.databricks.com','Host Name')
-dbutils.widgets.text('http_path','/sql/1.0/endpoints/d99d20fe77965310','http path')
-dbutils.widgets.text('parallel_conn','5','Parallel Connections')
-dbutils.widgets.text('re_peats','10','Query Repeats')
+dbutils.widgets.text('http_path','/sql/1.0/endpoints/b6019c8f57bcdda9','http path')
+dbutils.widgets.text('parallel_conn','2','Parallel Connections')
+dbutils.widgets.text('re_peats','2','Query Repeats')
 database = dbutils.widgets.get('database_name')
 hostname = dbutils.widgets.get('host_name')
 httpPath = dbutils.widgets.get('http_path')
@@ -160,3 +173,7 @@ def toJStringArray(arr):
 args = toJStringArray(["-c",yaml_path,"-o",result_path])
 
 sc._jvm.eu.semberal.dbstress.Main.main(args)
+
+# COMMAND ----------
+
+

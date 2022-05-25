@@ -19,7 +19,7 @@ MAX_PAGES_PER_RUN = 500
 # Queries that are running for longer than this will not be updated.
 # Can be set to a much higher number when backfilling data, for example when this Job didn't
 # run for a while.
-NUM_HOURS_TO_UPDATE = 1
+NUM_HOURS_TO_UPDATE = 24
 
 DATABASE_NAME = "unity_information"
 ENDPOINTS_TABLE_NAME = "endpoints"
@@ -203,6 +203,10 @@ while (has_next_page and pages_fetched < MAX_PAGES_PER_RUN):
   rdd_results = sc.parallelize([json_data])
   query_results = spark.read.json(rdd_results)
   
+#   # For querying convience, add columns with the time in seconds instead of milliseconds
+#   query_results_clean = query_results \
+#     .withColumn("query_start_time", from_unixtime(query_results.metrics.query_start_time_ms / 1000)) \
+#     .withColumn("query_end_time", from_unixtime(query_results.metrics.query_end_time_ms / 1000))
 
 #   # The error_message column is not present in the REST API response when none of the queries failed.
 #   # In that case we add it as an empty column, since otherwise the Delta merge would fail in schema
@@ -213,14 +217,6 @@ while (has_next_page and pages_fetched < MAX_PAGES_PER_RUN):
   query_results.createOrReplaceTempView("query_results")
   
   query_results_flat = spark.sql("select endpoint_id, executed_as_user_id, executed_as_user_name, execution_end_time_ms, is_final, lookup_key, plans_state, query_end_time_ms, query_id, query_start_time_ms, query_text, rows_produced, spark_ui_url, status, user_id, user_name, dbsql_version, name, compilation_time_ms, execution_time_ms, network_sent_bytes, photon_total_time_ms, pruned_bytes, pruned_files_count, read_bytes, read_cache_bytes, read_files_count, read_partitions_count, read_remote_bytes, result_fetch_time_ms, result_from_cache, rows_produced_count, rows_read_count, spill_to_disk_bytes, task_total_time_ms, total_time_ms, write_remote_bytes from (select *, channel_used.*, metrics.* from query_results) a")
-  
-  
-  #   # For querying convience, add columns with the time in seconds instead of milliseconds
-  query_results_clean = query_results_flat \
-    .withColumn("query_start_time", from_unixtime(query_results.query_start_time_ms / 1000)) \
-    .withColumn("query_end_time", from_unixtime(query_results.query_end_time_ms / 1000))
-
-  
   
   query_results_agg = query_results_agg.union(query_results_flat)
   
@@ -250,14 +246,6 @@ else:
     .execute()
 
     # TODO: Add more merge conditions to make it more efficient.
-
-# COMMAND ----------
-
-spark.sql(f"OPTIMIZE {DATABASE_NAME}.{QUERIES_TABLE_NAME}")
-
-# COMMAND ----------
-
-spark.sql(f"ANALYZE TABLE {DATABASE_NAME}.{QUERIES_TABLE_NAME} COMPUTE STATISTICS FOR ALL COLUMNS")
 
 # COMMAND ----------
 

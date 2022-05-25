@@ -7,6 +7,13 @@
 
 # COMMAND ----------
 
+# {
+#   "host_name": "e2-demo-west.cloud.databricks.com/",
+#   "endpoint_id": "b6019c8f57bcdda9"
+# }
+
+# COMMAND ----------
+
 dbutils.widgets.text('host_name','adb-2290777133481849.9.azuredatabricks.net','Host Name')
 dbutils.widgets.text('endpoint_id','d020197a762f4381','Endpoint ID')
 

@@ -3,12 +3,16 @@
 
 # COMMAND ----------
 
+dbutils.widgets.text('host_name','https://adb-2290777133481849.9.azuredatabricks.net','Host Name')
+
+# COMMAND ----------
+
 # DBTITLE 1,Constants
 # If you want to run this notebook yourself, you need to create a Databricks personal access token,
 # store it using our secrets API, and pass it in through the Spark config, such as this:
 # spark.pat_token {{secrets/query_history_etl/user}}, or Azure Keyvault.
 
-WORKSPACE_HOST = 'https://adb-2290777133481849.9.azuredatabricks.net'
+WORKSPACE_HOST = dbutils.widgets.get('host_name')
 ENDPOINTS_URL = "{0}/api/2.0/sql/endpoints".format(WORKSPACE_HOST)
 
 DATABASE_NAME = "unity_information"
@@ -89,10 +93,6 @@ endpoints = spark.read.json(sc.parallelize(endpoints_json))
 display(endpoints)
 endpoints.createOrReplaceTempView("endpoints_status_2")
 # endpoints.write.format("delta").option("overwriteSchema", "true").mode("overwrite").saveAsTable(DATABASE_NAME + "." + ENDPOINTS_TABLE_NAME)
-
-# COMMAND ----------
-
-
 
 # COMMAND ----------
 
